@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "svroute"
+version = "0.2.0"
+description = "1D Saint-Venant solver for dam breaks, flood routing and GLOFs in any prismatic cross-section (finite volume, HLL, MUSCL, well-balanced)"
+readme = "README.md"
+requires-python = ">=3.9"
+license = { text = "MIT" }
+dependencies = ["numpy>=1.22"]
+
+[project.optional-dependencies]
+dev = ["pytest>=7", "matplotlib>=3.6"]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]

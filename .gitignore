@@ -1,0 +1,38 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+build/
+dist/
+.eggs/
+
+# Environments
+.venv/
+venv/
+env/
+.conda/
+.env
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Node (Playwright is installed with --no-save for the browser test)
+node_modules/
+package-lock.json
+
+# Editors and OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Build output, archives and recordings
+_site/
+*.zip
+*.webm
+
+# Scratch files
+*.log
+*.tmp

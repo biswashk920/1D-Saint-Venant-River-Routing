@@ -1,0 +1,61 @@
+name: CI and Pages
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-python@v6
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+      - run: pip install -e ".[dev]"
+      - run: pytest -v
+      - run: python scripts/make_reference.py
+      - run: node web/test/compare.js
+      - run: node web/test/presets.js
+
+  browser:
+    # End-to-end test in Chromium (software WebGL). Reported separately so a browser-install
+    # hiccup never blocks the deploy; the test job above is what gates publishing.
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+      - run: npm install --no-save playwright
+      - run: npx playwright install --with-deps chromium
+      - run: node web/test/browser.js
+
+  deploy:
+    needs: test
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-24.04
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - uses: actions/checkout@v6
+      - run: |
+          mkdir _site
+          cp web/index.html web/section.js web/solver.js web/exact.js web/scenarios.js web/gl.js web/view3d.js web/ui.js _site/
+      - uses: actions/configure-pages@v6
+      - uses: actions/upload-pages-artifact@v5
+        with:
+          path: _site
+      - id: deployment
+        uses: actions/deploy-pages@v5
